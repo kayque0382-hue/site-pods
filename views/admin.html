@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Painel Névoa Pods</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Instrument+Sans:wght@400;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="/admin.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Painel de pods</h1>
+    <nav><a class="btn" href="/" target="_blank" rel="noopener">Ver site</a><button type="button" id="logout">Sair</button></nav>
+  </header>
+
+  <div class="layout">
+    <form class="panel" id="form" novalidate>
+      <h2 id="form-title">Adicionar pod</h2>
+      <label for="name">Nome do produto <input id="name" maxlength="60" placeholder="Ex.: Menta Gelada 8000" required></label>
+      <div class="row2">
+        <label for="cat">Categoria <select id="cat"></select></label>
+        <label for="price">Preço (R$) <input id="price" type="number" step="0.01" min="0.01" inputmode="decimal" placeholder="79,90" required></label>
+      </div>
+      <label for="note">Descrição curta <small>Aparece abaixo do nome</small><input id="note" maxlength="120" placeholder="Menta firme com final bem fresco."></label>
+      <div class="row2">
+        <label for="puffs">Puffs ou conteúdo <input id="puffs" maxlength="30" placeholder="8.000 puffs"></label>
+        <label for="nic">Nicotina <input id="nic" maxlength="20" placeholder="5% nic"></label>
+      </div>
+      <div class="row2">
+        <label for="color">Cor do pod <input id="color" type="color" value="#19b6a6"></label>
+        <label for="tag">Selo <small>Opcional</small><input id="tag" maxlength="20" placeholder="Novo"></label>
+      </div>
+      <label class="check" for="available"><input id="available" type="checkbox" checked> Disponível para venda</label>
+
+      <div class="preview" id="preview" aria-label="Prévia do card"></div>
+
+      <div class="msg" id="msg" role="status"></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="primary" id="save" type="submit">Adicionar ao site</button>
+        <button type="button" id="cancel" hidden>Cancelar edição</button>
+      </div>
+    </form>
+
+    <section>
+      <h2 style="margin-bottom:12px">Produtos no site <span id="total" style="font-family:var(--font-mono);font-size:.9rem;color:var(--muted)"></span></h2>
+      <div class="list" id="list"></div>
+    </section>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const brl = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
+let products = [], editingId = null;
+
+async function api(method, url, body) {
+  const r = await fetch(url, { method, credentials: "same-origin", headers: { "Content-Type": "application/json" }, body: body ? JSON.stringify(body) : undefined });
+  if (r.status === 401) { location.reload(); throw new Error("Sessão expirada."); }
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(d.error || "Erro inesperado.");
+  return d;
+}
+function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+function say(text, kind) { const m = $("msg"); m.textContent = text; m.className = "msg " + (kind || ""); }
+
+function podSvg(c, refill) {
+  const w = refill ? 54 : 64, x = (80 - w) / 2;
+  return '<svg viewBox="0 0 80 190" aria-hidden="true"><rect x="30" y="4" width="20" height="22" rx="6" fill="#0d2a33" opacity=".85"/>' +
+    '<rect x="' + x + '" y="22" width="' + w + '" height="160" rx="22" fill="' + c + '"/>' +
+    '<rect x="' + (x + 8) + '" y="38" width="' + (w - 16) + '" height="46" rx="12" fill="#fff" opacity=".28"/>' +
+    '<rect x="' + x + '" y="120" width="' + w + '" height="10" fill="#000" opacity=".14"/><circle cx="40" cy="156" r="6" fill="#fff" opacity=".6"/></svg>';
+}
+
+function formData() {
+  return { name: $("name").value, cat: $("cat").value, price: $("price").value, note: $("note").value, puffs: $("puffs").value,
+    nic: $("nic").value, color: $("color").value, tag: $("tag").value, available: $("available").checked };
+}
+function renderPreview() {
+  const d = formData(), box = $("preview");
+  box.style.setProperty("--c", d.color);
+  box.innerHTML = podSvg(d.color, d.cat === "Refis");
+  box.appendChild(el("strong", "", d.name || "Nome do produto"));
+  box.appendChild(el("span", "", d.price ? brl.format(Number(d.price)) : "R$ 0,00"));
+}
+["name", "cat", "price", "note", "puffs", "nic", "color", "tag", "available"].forEach(id => $(id).addEventListener("input", renderPreview));
+
+function resetForm() {
+  editingId = null; $("form").reset(); $("color").value = "#19b6a6"; $("available").checked = true;
+  $("form-title").textContent = "Adicionar pod"; $("save").textContent = "Adicionar ao site"; $("cancel").hidden = true;
+  renderPreview();
+}
+function startEdit(p) {
+  editingId = p.id;
+  $("name").value = p.name; $("cat").value = p.cat; $("price").value = p.price; $("note").value = p.note || "";
+  $("puffs").value = p.puffs || ""; $("nic").value = p.nic || ""; $("color").value = p.color; $("tag").value = p.tag || "";
+  $("available").checked = p.available !== false;
+  $("form-title").textContent = "Editar pod"; $("save").textContent = "Salvar alterações"; $("cancel").hidden = false;
+  say(""); renderPreview(); $("form").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function renderList() {
+  const list = $("list"); list.innerHTML = "";
+  $("total").textContent = "(" + products.length + ")";
+  if (!products.length) { list.appendChild(el("p", "", "Nenhum produto ainda. Use o formulário para adicionar o primeiro.")); return; }
+  products.forEach(p => {
+    const it = el("div", "item");
+    const dot = el("span", "dot"); dot.style.background = p.color; it.appendChild(dot);
+    const info = el("div");
+    const t = el("div", "t", p.name);
+    if (p.available === false) t.appendChild(el("span", "badge", "Esgotado"));
+    info.appendChild(t);
+    info.appendChild(el("div", "s", p.cat + " · " + brl.format(p.price)));
+    it.appendChild(info);
+    const acts = el("div", "acts");
+    const bEdit = el("button", "small", "Editar"); bEdit.type = "button"; bEdit.addEventListener("click", () => startEdit(p));
+    const bStock = el("button", "small", p.available === false ? "Repor" : "Esgotar"); bStock.type = "button";
+    bStock.addEventListener("click", async () => {
+      try { await api("PUT", "/api/admin/products/" + p.id, Object.assign({}, p, { available: p.available === false })); await load(); } catch (e) { say(e.message, "err"); }
+    });
+    const bDel = el("button", "small danger", "Excluir"); bDel.type = "button";
+    bDel.addEventListener("click", async () => {
+      if (!confirm("Excluir “" + p.name + "” do site?")) return;
+      try { await api("DELETE", "/api/admin/products/" + p.id); if (editingId === p.id) resetForm(); await load(); say("Produto excluído.", "ok"); } catch (e) { say(e.message, "err"); }
+    });
+    acts.append(bEdit, bStock, bDel); it.appendChild(acts); list.appendChild(it);
+  });
+}
+
+async function load() { products = await api("GET", "/api/products"); renderList(); }
+
+$("form").addEventListener("submit", async e => {
+  e.preventDefault(); say(""); $("save").disabled = true;
+  try {
+    const d = formData();
+    if (editingId) await api("PUT", "/api/admin/products/" + editingId, d);
+    else await api("POST", "/api/admin/products", d);
+    say(editingId ? "Alterações salvas." : "Pod adicionado ao site.", "ok");
+    resetForm(); await load();
+  } catch (err) { say(err.message, "err"); }
+  $("save").disabled = false;
+});
+$("cancel").addEventListener("click", () => { resetForm(); say(""); });
+$("logout").addEventListener("click", async () => { try { await api("POST", "/admin/logout", {}); } catch (e) {} location.reload(); });
+
+(async () => {
+  const cats = await api("GET", "/api/admin/categories");
+  cats.forEach(c => { const o = el("option", "", c); o.value = c; $("cat").appendChild(o); });
+  renderPreview(); load();
+})();
+</script>
+</body>
+</html>

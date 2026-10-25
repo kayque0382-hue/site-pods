@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Entrar | Painel Névoa Pods</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Instrument+Sans:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="/admin.css">
+</head>
+<body>
+<div class="center">
+  <form class="login" id="form" autocomplete="on">
+    <h1>Painel do administrador</h1>
+    <label for="user">Usuário <input id="user" name="username" autocomplete="username" required></label>
+    <label for="password">Senha <input id="password" name="password" type="password" autocomplete="current-password" required></label>
+    <button class="primary" id="go" type="submit">Entrar</button>
+    <div class="msg err" id="msg" role="alert"></div>
+  </form>
+</div>
+<script>
+document.getElementById("form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const msg = document.getElementById("msg"), go = document.getElementById("go");
+  msg.textContent = ""; go.disabled = true;
+  try {
+    const r = await fetch("/admin/login", {
+      method: "POST", headers: { "Content-Type": "application/json" }, credentials: "same-origin",
+      body: JSON.stringify({ user: document.getElementById("user").value, password: document.getElementById("password").value })
+    });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(d.error || "Não foi possível entrar.");
+    location.reload();
+  } catch (err) { msg.textContent = err.message; go.disabled = false; }
+});
+</script>
+</body>
+</html>

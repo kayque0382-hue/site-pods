@@ -1,0 +1,11 @@
+[
+  { "id": "1", "cat": "Descartáveis", "name": "Menta Gelada 8000", "note": "Menta firme com final bem fresco.", "puffs": "8.000 puffs", "nic": "5% nic", "price": 79.9, "color": "#19b6a6", "tag": "Mais vendido", "available": true },
+  { "id": "2", "cat": "Descartáveis", "name": "Morango com Kiwi 8000", "note": "Fruta doce com um toque ácido.", "puffs": "8.000 puffs", "nic": "5% nic", "price": 79.9, "color": "#e8457c", "tag": "", "available": true },
+  { "id": "3", "cat": "Descartáveis", "name": "Uva Ice 6000", "note": "Uva madura e gelo suave.", "puffs": "6.000 puffs", "nic": "5% nic", "price": 64.9, "color": "#7a4fd6", "tag": "", "available": true },
+  { "id": "4", "cat": "Descartáveis", "name": "Manga Tropical 6000", "note": "Manga doce, sem gelo.", "puffs": "6.000 puffs", "nic": "5% nic", "price": 64.9, "color": "#f4a21c", "tag": "Novo", "available": true },
+  { "id": "5", "cat": "Descartáveis", "name": "Melancia Gelada 10000", "note": "Melancia refrescante, longa duração.", "puffs": "10.000 puffs", "nic": "5% nic", "price": 99.9, "color": "#ef4b4b", "tag": "", "available": true },
+  { "id": "6", "cat": "Recarregáveis", "name": "Kit Pod Recarregável Slim", "note": "Bateria USB-C com 1 refil incluso.", "puffs": "Kit completo", "nic": "Vários", "price": 149.9, "color": "#2f6fe0", "tag": "", "available": true },
+  { "id": "7", "cat": "Recarregáveis", "name": "Kit Pod Recarregável Pro", "note": "Controle de potência e visor de bateria.", "puffs": "Kit completo", "nic": "Vários", "price": 219.9, "color": "#2b3a42", "tag": "Premium", "available": true },
+  { "id": "8", "cat": "Refis", "name": "Refil Menta Gelada (2 un.)", "note": "Compatível com o kit Slim e Pro.", "puffs": "2 refis", "nic": "3% nic", "price": 59.9, "color": "#19b6a6", "tag": "", "available": true },
+  { "id": "9", "cat": "Refis", "name": "Refil Cítrico Ice (2 un.)", "note": "Limão siciliano com gelo leve.", "puffs": "2 refis", "nic": "3% nic", "price": 59.9, "color": "#9bc21b", "tag": "", "available": true }
+]

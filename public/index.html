@@ -1,0 +1,286 @@
+<title>Névoa Pods</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: cabeçalho fixo, hero curto com chamada, filtro por categoria, grade de produtos com selo de puffs/nicotina, rodapé com aviso legal. */
+:root {
+  --bg: #e9eff1;
+  --surface: #f7fafb;
+  --ink: #0d2a33;
+  --muted: #4d6670;
+  --line: #cbd8dd;
+  --accent: #ff5a1f;
+  --accent-ink: #ffffff;
+  --wa: #128c4a;
+  --wa-ink: #ffffff;
+  --font-display: "Bricolage Grotesque", "Arial Narrow", sans-serif;
+  --font-body: "Instrument Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0a151a; --surface: #12232a; --ink: #e6f1f4; --muted: #92aab3;
+    --line: #23393f; --accent: #ff7a45; --accent-ink: #1a0a02; --wa: #2fc57a; --wa-ink: #04200f;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0a151a; --surface: #12232a; --ink: #e6f1f4; --muted: #92aab3;
+  --line: #23393f; --accent: #ff7a45; --accent-ink: #1a0a02; --wa: #2fc57a; --wa-ink: #04200f;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 32px;
+}
+.wrap { max-width: 1080px; margin: 0 auto; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+header.top {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding-block: 16px; border-bottom: 1px solid var(--line);
+}
+.logo { font-family: var(--font-display); font-weight: 800; font-size: 1.4rem; letter-spacing: -0.02em; display: flex; align-items: center; gap: 8px; }
+.logo svg { width: 26px; height: 26px; }
+.top a.contact { font-size: .9rem; font-weight: 600; text-decoration: none; border: 1.5px solid var(--ink); padding: 8px 14px; border-radius: 999px; }
+.top a.contact:hover { background: var(--ink); color: var(--bg); }
+
+.hero { padding-block: 40px 28px; display: grid; gap: 14px; }
+.hero h1 {
+  font-family: var(--font-display); font-weight: 800; letter-spacing: -0.035em; line-height: .98;
+  font-size: clamp(2.4rem, 9vw, 4.6rem); margin: 0; text-wrap: balance; max-width: 14ch;
+}
+.hero h1 em { font-style: normal; color: var(--accent); }
+.hero p { max-width: 52ch; color: var(--muted); margin: 0; font-size: 1.05rem; }
+.hero .facts { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 6px; font-family: var(--font-mono); font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.hero .facts b { color: var(--ink); }
+
+.filters { display: flex; flex-wrap: wrap; gap: 8px; padding-block: 8px 20px; }
+.chip {
+  font: 600 .9rem var(--font-body); color: var(--ink); background: transparent;
+  border: 1.5px solid var(--line); padding: 8px 16px; border-radius: 999px; cursor: pointer;
+}
+.chip:hover { border-color: var(--ink); }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); gap: 16px; }
+.card {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+  display: flex; flex-direction: column; overflow: hidden; min-width: 0;
+}
+.card .art {
+  background: color-mix(in srgb, var(--c) 16%, var(--surface));
+  display: grid; place-items: center; padding: 22px 0 14px; position: relative;
+}
+.card .art svg { height: 170px; width: auto; max-width: 100%; }
+.card .tag {
+  position: absolute; top: 12px; left: 12px; font-family: var(--font-mono); font-size: .7rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .06em; background: var(--ink); color: var(--bg); padding: 4px 8px; border-radius: 6px;
+}
+.card .body { padding: 16px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.card h3 { font-family: var(--font-display); font-weight: 700; font-size: 1.25rem; letter-spacing: -0.02em; margin: 0; line-height: 1.15; }
+.card .note { color: var(--muted); font-size: .92rem; margin: 0; }
+.specs { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 10px; padding: 0; list-style: none; }
+.specs li { font-family: var(--font-mono); font-size: .74rem; border: 1px solid var(--line); border-radius: 6px; padding: 3px 8px; color: var(--muted); }
+.buy { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.price { font-family: var(--font-mono); font-weight: 700; font-size: 1.35rem; font-variant-numeric: tabular-nums; }
+.price small { display: block; font-size: .68rem; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.btn {
+  background: var(--wa); color: var(--wa-ink); font-weight: 700; font-size: .95rem; text-decoration: none;
+  padding: 11px 16px; border-radius: 10px; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap;
+}
+.btn:hover { filter: brightness(1.08); }
+.btn[aria-disabled="true"] { background: var(--line); color: var(--muted); pointer-events: none; }
+.empty { grid-column: 1 / -1; color: var(--muted); padding: 24px 0; }
+.btn svg { width: 18px; height: 18px; fill: currentColor; }
+
+.how { margin-top: 48px; display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); }
+.how h2 { grid-column: 1 / -1; font-family: var(--font-display); font-size: 1.8rem; letter-spacing: -0.03em; margin: 0; }
+.how div { border-top: 2px solid var(--ink); padding-top: 10px; }
+.how h4 { margin: 0 0 4px; font-size: 1rem; }
+.how p { margin: 0; color: var(--muted); font-size: .94rem; }
+
+.seller { margin-top: 40px; background: var(--ink); color: var(--bg); border-radius: 14px; padding: 22px; display: flex; flex-wrap: wrap; gap: 14px 24px; align-items: center; justify-content: space-between; }
+.seller h2 { font-family: var(--font-display); margin: 0; font-size: 1.5rem; letter-spacing: -0.02em; }
+.seller p { margin: 4px 0 0; opacity: .8; font-size: .95rem; }
+.seller .num { font-family: var(--font-mono); font-weight: 700; font-size: 1.1rem; }
+
+footer { margin-top: 32px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: .85rem; display: grid; gap: 8px; }
+footer strong { color: var(--ink); }
+
+#gate {
+  position: fixed; inset: 0; z-index: 50; background: color-mix(in srgb, var(--bg) 94%, transparent);
+  backdrop-filter: blur(10px); display: grid; place-items: center;
+  padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+}
+#gate .box { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 28px; max-width: 420px; width: 100%; display: grid; gap: 12px; }
+#gate h2 { font-family: var(--font-display); font-size: 1.8rem; letter-spacing: -0.03em; margin: 0; line-height: 1.05; }
+#gate p { margin: 0; color: var(--muted); }
+#gate .row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+#gate button { font: 700 1rem var(--font-body); padding: 12px 18px; border-radius: 10px; cursor: pointer; border: 1.5px solid var(--ink); }
+#gate .yes { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+#gate .no { background: transparent; color: var(--ink); }
+#deny { color: var(--accent); font-weight: 600; }
+@media (prefers-reduced-motion: no-preference) { .card { transition: transform .15s; } .card:hover { transform: translateY(-3px); } }
+</style>
+
+<div id="gate" role="dialog" aria-modal="true" aria-labelledby="gate-title">
+  <div class="box">
+    <h2 id="gate-title">Você tem 18 anos ou mais?</h2>
+    <p>Este site divulga produtos com nicotina, vendidos apenas para maiores de idade.</p>
+    <div class="row">
+      <button class="yes" id="gate-yes" type="button">Sim, tenho 18+</button>
+      <button class="no" id="gate-no" type="button">Não</button>
+    </div>
+    <p id="deny" hidden>O acesso é permitido apenas para maiores de 18 anos.</p>
+  </div>
+</div>
+
+<div class="wrap">
+  <header class="top">
+    <div class="logo">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M9 25c-3.3 0-6-2.2-6-5s2.7-5 6-5c.4-3.4 3.5-6 7.3-6 3.4 0 6.2 2 7 4.8C26.9 14 29 16 29 18.600 29 21.600 26.500 25 23 25H9z" fill="var(--accent)"/></svg>
+      Névoa Pods
+    </div>
+    <a class="contact" href="#contato">Falar com o vendedor</a>
+  </header>
+
+  <section class="hero">
+    <h1>Todo sabor, <em>um toque</em> de distância.</h1>
+    <p>Descartáveis, recarregáveis e refis selecionados. Escolha o seu, veja o preço e feche direto com o vendedor pelo WhatsApp.</p>
+    <div class="facts"><span><b id="count">0</b> modelos na vitrine</span><span><b>Pix</b> e cartão</span><span><b>Retirada</b> combinada no chat</span></div>
+  </section>
+
+  <div class="filters" id="filters" role="group" aria-label="Filtrar por categoria"></div>
+  <main class="grid" id="grid" aria-live="polite"></main>
+
+  <section class="how" aria-labelledby="how-title">
+    <h2 id="how-title">Como comprar</h2>
+    <div><h4>Escolha o pod</h4><p>Compare sabor, puffs e nicotina. Todos os preços já estão na vitrine.</p></div>
+    <div><h4>Toque em “Adquira o seu”</h4><p>O WhatsApp abre com o nome do produto já escrito na mensagem.</p></div>
+    <div><h4>Combine com o vendedor</h4><p>Confirme estoque, forma de pagamento e como receber.</p></div>
+  </section>
+
+  <section class="seller" id="contato">
+    <div>
+      <h2>Prefere falar direto?</h2>
+      <p>Atendimento por WhatsApp, todos os dias.</p>
+    </div>
+    <a class="btn" id="seller-btn" href="#" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.600 15.100L2 22l5-1.300A10 10 0 1 0 12 2zm5.200 14.200c-.2.600-1.300 1.200-1.800 1.200-.5.100-1 .2-3.300-.7-2.800-1.200-4.600-4-4.700-4.200-.1-.2-1.100-1.500-1.100-2.800s.7-2 1-2.300c.2-.3.500-.3.700-.3h.5c.2 0 .4 0 .6.500l.8 2c.1.200.1.400 0 .5l-.3.500-.4.400c-.1.200-.3.300-.1.600.2.300.8 1.300 1.700 2.100 1.200 1 2.100 1.300 2.400 1.500.3.100.5.100.6-.1l.9-1.100c.2-.3.400-.2.600-.1l1.900.9c.3.100.4.200.5.300.1.200.1.800-.1 1.400z"/></svg>
+      <span>Chamar no WhatsApp</span>
+    </a>
+  </section>
+
+  <footer>
+    <div><strong>Aviso:</strong> contém nicotina, substância que causa dependência. Venda e uso exclusivos para maiores de 18 anos. Imagens ilustrativas.</div>
+    <div>Preços e disponibilidade sujeitos a confirmação com o vendedor.</div>
+  </footer>
+</div>
+
+<script>
+let WHATSAPP = "";
+let PRODUCTS = [];
+const brl = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
+const WA_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.600 15.100L2 22l5-1.300A10 10 0 1 0 12 2zm5.200 14.200c-.2.600-1.300 1.200-1.800 1.200-.5.100-1 .2-3.300-.7-2.800-1.200-4.600-4-4.700-4.200-.1-.2-1.100-1.500-1.100-2.800s.7-2 1-2.300c.2-.3.500-.3.700-.3h.5c.2 0 .4 0 .6.500l.8 2c.1.200.1.400 0 .5l-.3.500-.4.400c-.1.200-.3.300-.1.600.2.300.8 1.300 1.700 2.100 1.200 1 2.100 1.300 2.400 1.500.3.100.5.100.6-.1l.9-1.100c.2-.3.400-.2.600-.1l1.900.9c.3.100.4.200.5.300.1.200.1.800-.1 1.400z"/></svg>';
+
+function waLink(text) { return "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(text); }
+function safeColor(c) { return /^#[0-9a-f]{6}$/i.test(c) ? c : "#19b6a6"; }
+
+function podSvg(c, refill) {
+  c = safeColor(c);
+  const w = refill ? 54 : 64;
+  const x = (80 - w) / 2;
+  return '<svg viewBox="0 0 80 190" aria-hidden="true">' +
+    '<rect x="30" y="4" width="20" height="22" rx="6" fill="#0d2a33" opacity=".85"/>' +
+    '<rect x="' + x + '" y="22" width="' + w + '" height="160" rx="22" fill="' + c + '"/>' +
+    '<rect x="' + (x + 8) + '" y="38" width="' + (w - 16) + '" height="46" rx="12" fill="#ffffff" opacity=".28"/>' +
+    '<rect x="' + (x + 8) + '" y="38" width="9" height="46" rx="4.500" fill="#ffffff" opacity=".45"/>' +
+    '<rect x="' + x + '" y="120" width="' + w + '" height="10" fill="#000000" opacity=".14"/>' +
+    '<circle cx="40" cy="156" r="6" fill="#ffffff" opacity=".6"/></svg>';
+}
+
+function el(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text !== undefined) e.textContent = text;
+  return e;
+}
+
+let current = "Todos";
+
+function renderFilters() {
+  const box = document.getElementById("filters");
+  box.innerHTML = "";
+  const cats = ["Todos"].concat(Array.from(new Set(PRODUCTS.map(p => p.cat))));
+  if (!cats.includes(current)) current = "Todos";
+  cats.forEach(c => {
+    const b = el("button", "chip", c);
+    b.type = "button";
+    b.setAttribute("aria-pressed", String(c === current));
+    b.addEventListener("click", () => { current = c; renderFilters(); renderGrid(); });
+    box.appendChild(b);
+  });
+}
+
+function renderGrid() {
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+  const list = PRODUCTS.filter(p => current === "Todos" || p.cat === current);
+  document.getElementById("count").textContent = PRODUCTS.length;
+  if (!list.length) { grid.appendChild(el("p", "empty", "Nenhum produto cadastrado no momento.")); return; }
+  list.forEach(p => {
+    const card = el("article", "card");
+    card.style.setProperty("--c", safeColor(p.color));
+    const art = el("div", "art");
+    if (p.tag) art.appendChild(el("span", "tag", p.tag));
+    const svgBox = el("div"); svgBox.innerHTML = podSvg(p.color, p.cat === "Refis");
+    art.appendChild(svgBox.firstChild);
+    const body = el("div", "body");
+    body.appendChild(el("h3", "", p.name));
+    if (p.note) body.appendChild(el("p", "note", p.note));
+    const specs = el("ul", "specs");
+    [p.cat, p.puffs, p.nic].filter(Boolean).forEach(t => specs.appendChild(el("li", "", t)));
+    body.appendChild(specs);
+    const buy = el("div", "buy");
+    const price = el("div", "price"); price.appendChild(el("small", "", "à vista")); price.appendChild(document.createTextNode(brl.format(p.price)));
+    const a = el("a", "btn"); a.target = "_blank"; a.rel = "noopener";
+    if (p.available === false) {
+      a.setAttribute("aria-disabled", "true"); a.textContent = "Esgotado";
+    } else {
+      a.href = waLink("Olá! Quero adquirir o pod " + p.name + " (" + brl.format(p.price) + "). Ainda tem disponível?");
+      a.innerHTML = WA_ICON; a.appendChild(document.createTextNode("Adquira o seu"));
+    }
+    buy.appendChild(price); buy.appendChild(a);
+    body.appendChild(buy);
+    card.appendChild(art); card.appendChild(body);
+    grid.appendChild(card);
+  });
+}
+
+async function load() {
+  try {
+    const [cfg, prods] = await Promise.all([fetch("/api/config").then(r => r.json()), fetch("/api/products").then(r => r.json())]);
+    WHATSAPP = cfg.whatsapp || "";
+    PRODUCTS = prods;
+  } catch (e) { PRODUCTS = []; }
+  document.getElementById("seller-btn").href = waLink("Olá! Vi o site e gostaria de saber mais sobre os pods.");
+  renderFilters(); renderGrid();
+}
+load();
+
+/* Verificação de idade */
+const gate = document.getElementById("gate");
+try { if (sessionStorage.getItem("idade-ok") === "1") gate.hidden = true; } catch (e) {}
+document.getElementById("gate-yes").addEventListener("click", () => {
+  gate.hidden = true;
+  try { sessionStorage.setItem("idade-ok", "1"); } catch (e) {}
+});
+document.getElementById("gate-no").addEventListener("click", () => {
+  document.getElementById("deny").hidden = false;
+});
+</script>
